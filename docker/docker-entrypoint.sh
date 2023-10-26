@@ -1,8 +1,10 @@
 #!/bin/bash
 set -e
 
-chown -R www-data:www-data .env
-chmod -R 775 .env
+if [[ -r ".env" && -w ".env" ]]; then
+    chown -R www-data:www-data .env
+    chmod -R 775 .env
+fi
 
 # app specific setup here
 ./bin/console doctrine:migrations:migrate --no-interaction --no-ansi --allow-no-migration
