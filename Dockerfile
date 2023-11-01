@@ -2,6 +2,12 @@ FROM php:8.2-apache AS symfony-base
 WORKDIR /var/www/html
 ENV COMPOSER_ALLOW_SUPERUSER=1
 
+# allow customizing the www-data user and group ids
+ARG WWW_DATA_UID=1004
+ARG WWW_DATA_GID=986
+RUN usermod  --uid $WWW_DATA_UID www-data
+RUN groupmod --gid $WWW_DATA_GID www-data
+
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
         libxslt1-dev \
