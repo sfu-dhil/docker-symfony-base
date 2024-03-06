@@ -8,7 +8,9 @@ ARG WWW_DATA_GID=986
 RUN usermod  --uid $WWW_DATA_UID www-data
 RUN groupmod --gid $WWW_DATA_GID www-data
 
-RUN apt-get update \
+# https://dl.cloudsmith.io/public/symfony/stable/setup.deb.sh required for symfony-cli
+RUN curl -1sLf 'https://dl.cloudsmith.io/public/symfony/stable/setup.deb.sh' | bash \
+    && apt-get update \
     && apt-get install -y --no-install-recommends \
         libxslt1-dev \
         git \
@@ -20,6 +22,7 @@ RUN apt-get update \
         libicu-dev \
         libapache2-mod-xsendfile \
         netcat-traditional \
+        symfony-cli \
     && cp "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini" \
     && a2enmod rewrite headers \
     && docker-php-ext-configure intl \
@@ -27,8 +30,6 @@ RUN apt-get update \
     && pecl install imagick pcov \
     && docker-php-ext-enable imagick pcov \
     && curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer \
-    && curl -sS https://get.symfony.com/cli/installer | bash \
-    && mv /root/.symfony5/bin/symfony /usr/local/bin/symfony \
     && git config --global --add safe.directory /var/www/html \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
